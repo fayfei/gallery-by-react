@@ -1,4 +1,7 @@
 'use strict';
+
+let autoprefixer = require('autoprefixer');
+
 const path = require('path');
 const srcPath = path.join(__dirname, '/../src');
 const dfltPort = 8000;
@@ -36,7 +39,7 @@ function getDefaultModules() {
       },
       {
         test: /\.json$/,
-        loader: 'json-loader'  
+        loader: 'json-loader'
       },
       {
         test: /\.(mp4|ogg|svg)$/,
@@ -50,7 +53,5 @@ module.exports = {
   publicPath: '/assets/',
   port: dfltPort,
   getDefaultModules: getDefaultModules,
-  postcss: function () {
-    return [require('autoprefixer'), require('precss')];
-  }
+  postcss: [ autoprefixer({ browsers: ['last 2 versions'] }) ]
 };
