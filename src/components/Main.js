@@ -67,6 +67,30 @@ class ImgFigure extends React.Component {
     }
 }
 
+class ControllerUnit extends  React.Component {
+    handleClick(e) {
+        if (this.props.arrange.isCenter) {
+            this.props.inverse();
+        } else {
+            this.props.center();
+        }
+        e.stopPropagation();
+        e.preventDefault();
+    }
+    render() {
+        let controllerUnitClassName = 'controller-unit';
+        if (this.props.arrange.isCenter) {
+            controllerUnitClassName += ' is-center';
+            if (this.props.arrange.isInverse) {
+                controllerUnitClassName += ' is-inverse';
+            }
+        }
+        return (
+            <span className={controllerUnitClassName} onClick={this.handleClick.bind(this)}></span>
+        )
+    }
+}
+
 class GalleryByReactApp extends React.Component {
     constructor() {
         super();
@@ -113,7 +137,7 @@ class GalleryByReactApp extends React.Component {
             vPosRangeX = vPosRange.x,
 
             imgsArrangeTopArr = [],
-            topImgNum = Math.ceil(Math.random() * 2),
+            topImgNum = Math.floor(Math.random() * 2),
             topImgSpliceIndex = 0,
 
             imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex, 1);
@@ -123,7 +147,7 @@ class GalleryByReactApp extends React.Component {
             rotate: 0,
             isInverse: false,
             isCenter: true
-        }
+        };
 
         topImgSpliceIndex = Math.ceil(Math.random() * (imgsArrangeArr.length - topImgNum));
 
@@ -225,6 +249,7 @@ class GalleryByReactApp extends React.Component {
             }
 
             imgFigures.push(<ImgFigure key={index} data={value} ref={'imgFigure' + index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}/>);
+            controllerUnits.push(<ControllerUnit key={index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}></ControllerUnit>)
         });
         return (
         <section className="stage" ref="stage">
