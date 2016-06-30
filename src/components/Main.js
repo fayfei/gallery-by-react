@@ -29,8 +29,13 @@ function get30DegRandom() {
 class ImgFigure extends React.Component {
 
     handleClick(e) {
-        this.props.inverse();
+        if (this.props.arrange.isCenter) {
+            this.props.inverse();
+        } else {
+            this.props.center();
+        }
         e.stopPropagation();
+        e.preventDefault();
     }
     render() {
         let styleObj = {};
@@ -41,6 +46,9 @@ class ImgFigure extends React.Component {
             ['-moz-','-ms-','-webkit-',''].forEach(value => {
                 styleObj[value + 'transform'] = 'rotate(' + this.props.arrange.rotate + 'deg)';
             });
+        }
+        if (this.props.arrange.isCenter) {
+            styleObj['zIndex'] = 11;
         }
         let ImgFigureClassName = 'img-figure';
         ImgFigureClassName += this.props.arrange.isInverse ? ' is-inverse' : '';
@@ -86,7 +94,6 @@ class GalleryByReactApp extends React.Component {
         return () => {
             let imgsArrangeArr = this.state.imgsArrangeArr;
             imgsArrangeArr[index].isInverse = !imgsArrangeArr[index].isInverse;
-            console.log(imgsArrangeArr[index].isInverse)
             this.setState({
                 imgsArrangeArr: imgsArrangeArr
             });
@@ -111,9 +118,12 @@ class GalleryByReactApp extends React.Component {
 
             imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex, 1);
 
-        imgsArrangeCenterArr[0].pos = centerPos;
-        imgsArrangeCenterArr[0].rotate = 0;
-        imgsArrangeCenterArr[0].isInverse = false;
+        imgsArrangeCenterArr[0] = {
+            pos: centerPos,
+            rotate: 0,
+            isInverse: false,
+            isCenter: true
+        }
 
         topImgSpliceIndex = Math.ceil(Math.random() * (imgsArrangeArr.length - topImgNum));
 
@@ -126,7 +136,8 @@ class GalleryByReactApp extends React.Component {
                     left: getRangeRandom(vPosRangeX[0], vPosRangeX[1])
                 },
                 rotate: get30DegRandom(),
-                isInverse: false
+                isInverse: false,
+                isCenter: false
             }
         });
 
@@ -144,7 +155,8 @@ class GalleryByReactApp extends React.Component {
                     left: getRangeRandom(hPosRangeLORX[0], hPosRangeLORX[1])
                 },
                 rotate: get30DegRandom(),
-                isInverse: false
+                isInverse: false,
+                isCenter:false
             }
 
         }
@@ -157,6 +169,10 @@ class GalleryByReactApp extends React.Component {
         this.setState({
             imgsArrangeArr: imgsArrangeArr
         });
+    }
+
+    center(index) {
+      return () => this.rearrange(index);
     }
 
     componentDidMount() {
@@ -203,11 +219,12 @@ class GalleryByReactApp extends React.Component {
                         top: 0
                     },
                     rotate: 0,
-                    isInverse: false
+                    isInverse: false,
+                    isCenter: false
                 }
             }
 
-            imgFigures.push(<ImgFigure key={index} data={value} ref={'imgFigure' + index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)}/>);
+            imgFigures.push(<ImgFigure key={index} data={value} ref={'imgFigure' + index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}/>);
         });
         return (
         <section className="stage" ref="stage">
